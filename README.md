@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##Local Certificate Authority Install  
 The Local CA should not be a host connected to a network. Before removing the hard drive from the SVS configure it as the Local CA.  
 1. Configure the SVS hard drive as the Local CA  
-2. The Ubuntu 12.04 install should be configured to use the LUKS full disck encryption by using the alternate install cd  
+2. The Ubuntu 12.04 install should be configured to use the LUKS full disk encryption by using the alternate install cd  
 3. Generate the needed certificates and revocation file using the steps below  
 4. Distribute the certificates as needed  
 5. Remove the hard drive configured as the Local CA from the SVS shell  
@@ -122,8 +122,8 @@ Export the Journalist's gpg public key
 
 ####Determine and record the application's gpg key's fingerprint  
 
-	gpg --homedir /deaddrop/keys --list-keys  
-	gpg --homedir */location set in earlier step/* --edit-key "Journalist_name_from_list"  
+	gpg --homedir /var/www/deaddrop/keys --list-keys --with-fingerprint  
+ 
 
 You will get a prompt like `Command>` type `fpr` and hit enter  
 it will then show you the key's fingerprint. It should look like the line below. Record it somewhere for use in the puppet nodes.pp file.  
@@ -235,7 +235,9 @@ Modify parameters and hostnames the first section of nodes.pp manifest
 
 	/etc/init.d/puppetmaster restart
 
+------------------------
 ###Install Puppet on the Source and Journalist servers  
+------------------------
 
 	apt-get install puppet iptables-persistent  
 	
@@ -273,7 +275,7 @@ Run puppet on the 1) monitor server, 2) journalist interface server, 3) source i
 Ensure that you are not root. Each user that needs SSH access will need to perform these steps. The same key can be used for all devices in the same environment. If the ios/android device and the servers are more than 30 seconds off the codes will not work. Currently the puppet manifest only downloads and partially install google-authenticator it does not enable it. Was worried that people may lock themselves out. You can read more about it at https://code.google.com/p/google-authenticator/    
 
 ###Each admin should create their own code  
-1. Create the code  
+Create the code  
 
 	cd ~  
 	google-authenticator  
@@ -284,25 +286,29 @@ Ensure that you are not root. Each user that needs SSH access will need to perfo
 >n  
 >y  
 
-2. To set up you ios or android device install the 'google authenticator' app from the respective official app stores.  
-3. Open the app and click 'add key manually'  
-4. On the server run \# `cat ~/.google-authenticator` The first line is your key. Enter that exactly into the google-authenticator app  
-5. Edit **/etc/ssh/sshd_config** and change **ChallengeResponseAuthentication** from **no** to **yes**
+To set up you ios or android device install the 'google authenticator' app from the respective official app stores.  
+
+Open the app and click 'add key manually'  
+
+On the server run \# `cat ~/.google-authenticator` The first line is your key. Enter that exactly into the google-authenticator app  
+
+Edit **/etc/ssh/sshd_config** and change **ChallengeResponseAuthentication** from **no** to **yes**
 
 >ChallengeResponseAuthentication yes  
 
-6. Edit /etc/pam.d/common-auth  and add  **auth    required	pam_google_authenticator.so** so that it will look like the following  
+Edit /etc/pam.d/common-auth  and add  **auth    required	pam_google_authenticator.so** so that it will look like the following  
 
 >here are the per-package modules (the "Primary" block)  
 >auth    required                        pam_google_authenticator.so  
 >auth    [success=1 default=ignore]      pam_unix.so nullok_secure  
 
-7. Restart ssh and test it in a new connection. Do not close or log out of the current window  
+Restart ssh and test it in a new connection. Do not close or log out of the current window  
 
 	/etc/init.d/ssh restart  
 	
-8. Open a new terminal window and ssh into the server and verify you can login. do not close the other window until after you verified that you still have access.  
-9. Copy you secret key to the other hosts with a command like this one  
+Open a new terminal window and ssh into the server and verify you can login. do not close the other window until after you verified that you still have access.  
+
+Copy you secret key to the other hosts with a command like this one  
 
 	scp /home/user_name/.google-authenticator user_name@source:.  
 
@@ -403,6 +409,12 @@ After the reboot check that you booted into the correct kernel.
 	uname -r  
 
 It should end in '-grsec'  
+
+After finishing installing the ensure the grsec sysctl configs are applied and locked
+
+    sysctl -p  
+    sysctl -w kernel.grsecurity.grsec_lock = 1  
+
 
 ##Clean up the system and puppet firewall rules  
 Once the environment is verified, uninstall puppet on the puppetmaster and puppet agents to decrease the attack surface  
