@@ -3,7 +3,7 @@ Deaddrop Environment Install Guide
 
 Deaddrop is a tool for communicating securely with journalists. Please also view the Threat_Model.doc, diagram.jpg, and design.jpg in docs/ for more information. The environment install guide is below the license. 
 
-Copyright (C) 2011-2012.
+Copyright (C) 2011-2013 James Dolan
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
