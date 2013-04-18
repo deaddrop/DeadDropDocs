@@ -1,18 +1,9 @@
-#Deaddrop Threat Model  
+#DeadDrop Threat Model  
 ---------------------  
 
 ##Application Name and Description  
-Tip Box is meant to let you communicate with our journalists with greater anonymity and security than afforded by conventional e-mail. It does not provide perfect security or anonymity.  
+DeadDrop is meant to let sources communicate with journalists with greater anonymity and security than afforded by conventional e-mail.
 
-When you visit or use our public Tip Box server at https://tips.CompanyName, CompanyName will not record in any way your IP address or information about your browser, computer or operating system, nor will we embed third-party content or deliver cookies to your browser.  
-
-The Tip Box servers are under the physical control of CompanyName in a physically and logically segregated area at a secured data center. Tip Box servers and network share no elements in common with CompanyName infrastructure.  
-
-When you visit our Tip Box your session will normally be protected in-transit by SSL encryption to provide a higher level of communications security than an unencrypted web session would provide. This is the same mechanism major financial institutions use to protect customer information from eavesdropping. However, YOU SHOULD KNOW THAT THERE ARE ATTACK METHODS THAT MALICIOUS THIRD PARTIES CAN USE TO COMPROMISE SSL SECURITY UNDER CERTAIN CIRCUMSTANCES.  
-
-IMPORTANT: While we take significant efforts to protect the security of the Tip Box system, we cannot guarantee that it won't be compromised. If, despite our efforts, our system is compromised, an intruder could reprogram the system to gain access to information that we do not gather ourselves, including your IP address. To provide further protection against this and other risks, we recommend that you use the Tip Box through the Tor anonymity network.  
-
-The system is provided on an "as is" basis, with no warranties or representations, and any use of it is at the user's own risk.  
 
 ##Business Objectives  
 * Design an application that provides a source a way to securely upload documents and messages to a journalist that protects the source's anonymity.  
@@ -20,14 +11,14 @@ The system is provided on an "as is" basis, with no warranties or representation
 * The application should allow for the source to return to the site and check for replies from the journalist.  
 * The application and environment should be designed so only the selected journalists can decrypt the source's encrypted documents and files.  
 * The application and environment should be designed so only the intended source can view the journalist's clear text replies.  
-* The source's authentication mechanism while being secure should be easy for the source to remember without writing down. 
+* The source's authentication mechanism, while being secure, should be easy for the source to remember without writing down. 
 * The application and environment should use well known and industry accepted cryptography and security practices.  
 * The environment should be monitored for possible security events though identifiable information about the source should be excluded from all logs in the environment.  
 * The application and environment should be designed to protect the encrypted files even in the event of a full system compromise or seizure.  
 
 
 ##Anonymity Provided
-* A Tor Hidden service has been configured for the application. It is highly recommended for the source to use the application's Tor hidden service to submit messages, documents and check for replies. Please consult this link for more information on Tor and Tor hidden services https://www.torproject.org/docs/hidden-services.html.en  
+* A Tor hidden service is configured for the application. It is highly recommended for the source to use Tor to submit messages, documents and check for replies. Please consult this link for more information on Tor and Tor hidden services https://www.torproject.org/docs/hidden-services.html.en  
 * Only the two selected journalists have physical access to the application's GPG private key and know the key's passphrase used to decrypt source files. These steps were taken to provide reasonable assurance that only the two selected journalists could decrypt the files after they were encrypted in the application.   
 * The network firewall only detects the tor traffic not information about the source.  
 * Apache access logs are not kept.  
@@ -36,12 +27,12 @@ The system is provided on an "as is" basis, with no warranties or representation
 * The secure viewing station is where the application's GPG private keys decrypts the source's submitted information and is 1) never connected to a network, 2) booted from a LiveCD, 3) the hard drive is removed, 4) physically located in a secured corporate facility.  
 * Journalist's reply messages to sources are encrypted with a GPG keypair unique to the source.  
 * Journalist's replies are encrypted with a gpg passphrase that is only known to the source and never stored in clear text in the application.   
-* The source is recommended to delete replies after reading them. The application use secure-remove to delete the file and is not reasonably forensically recoverable.  
+* The source is urged to delete replies after reading them. The application uses secure-remove to delete the file and it is not reasonably forensically recoverable.
 * To ensure that the physical devices are not tampered with the network firewalls, source interface, journalist interface and monitors servers are located in a corporate owned facility (not a co-location hosting provider or cloud provider).   *The environment is physically monitored 24/7 with strict access policies.  
 
 ##Application Usage  
 ###Source's Role  
-(S1) The source requests tips.companyname.com, and the application displays a warning to the source that the preferred method to access the application is through the Tor network*. The Tor hidden service URL, directions, and links to the Tor single-purpose browser are also displayed to the unauthenticated source. The source downloads and installs the Tor single-purpose browser from https://torproject.org. The source uses the site's hidden service URL (.onion) to use the application with a higher level of anonymity than a HTTPS url can provide.  
+(S1) The organization's Tor hidden service URL, directions, and links to the Tor single-purpose browser are displayed organization's website. The source downloads and installs the Tor single-purpose browser from https://torproject.org. The source uses the site's hidden service URL (.onion) to use the application with a higher level of anonymity than a HTTPS url can provide.  
 
 (S2) A link to the privacy statement is provided.  
 
@@ -72,18 +63,18 @@ The system is provided on an "as is" basis, with no warranties or representation
 
 (J5) The journalist then walks the application's external hard drive (with the encrypted files saved to it) over to the Secure Viewing Station (SVS) that is never connected to a network to decrypt and view the submitted information.  
 
-(J6) The SVS is a workstation that is booted from a LiveCd with the hard drive removed to limit its attack surface to persistent threats. It is never connected to any wired or wireless networks to prevent a remote attacker from accessing it. The source then inserts the application's external hard drive into the booted SVS and transfers the encrypted files to the SVS desktop. After the transfer is complete, the journalist should securely delete the encrypted file from the external hard drive and remove the drive. After the application's external hard drive is removed from the SVS, the journalist should insert application's secure keydrive that contains the application's private GPG key and the journalist’s personnel public key into the SVS. The journalist should then decrypt the files using the application's private GPG key. The journalist can then proceed validating the submitted documents. When the journalist's session is over, they should remove the application's secure keydrive, power down the SVS, and securely store all components. Only the selected journalists should know the passphrase and physical access to the application's GPG private key.  
+(J6) The SVS is a workstation that is booted from a LiveCD with the hard drive removed to limit its attack surface to persistent threats. It is never connected to any wired or wireless networks, to prevent a remote attacker from accessing it. The source then inserts the application's external hard drive into the booted SVS and transfers the encrypted files to the SVS desktop. After the transfer is complete, the journalist should securely delete the encrypted file from the external hard drive and remove the drive. After the application's external hard drive is removed from the SVS, the journalist should insert application's secure keydrive that contains the application's private GPG key and the journalist’s personnel public key into the SVS. The journalist should then decrypt the files using the application's private GPG key. The journalist can then proceed validating the submitted documents. When the journalist's session is over, they should remove the application's secure keydrive, power down the SVS, and securely store all components. Only the selected journalists should know the passphrase and physical access to the application's GPG private key.  
 
 (J7) For scenarios where a journalist requires part of the unencrypted contents of submitted information for publication, the journalist should encrypt the clear text contents using their personal GPG keypair – not the application's keypair, on the secure viewing station before transferring them to their personnel workstation. The source's documents and messages should be encrypted at rest until the article is ready for publication.  
 
 (J8) The journalist's interface also has a reply function. The journalist can enter their message for a specific source into a text box and click 'Submit.' The application retrieves the source's GPG public key based off of the source's hashed codename. If the journalist cannot access the source's GPG public key, the reply function is not rendered. The application encrypts the journalist reply with a unique source's GPG public key, which is stored in the source's hashed codename-encrypted file store.  
 
-##Authenitcation    
+##Authentication    
 * VPN authentication requires 1) username, 2) follows the organization's password complexity policy, and 3) requires 2-factor authentication such as the one from DUO Security.  
 
 * Admin SSH access should require 1) 2-factor authentication, such as Google 2-factor pam module, 2) following the organization's policy for password complexity, and 3) access restricted to the admin's internal vpn address.  
 
-* The Deaddrop password-less ECDSA 4096-bit length keyfile used for the sshfs mount, should restrict logins to the journalist server from the source server, and restrict the user to sshfs commands only.  
+* The DeadDrop password-less ECDSA 4096-bit length keyfile used for the sshfs mount, should restrict logins to the journalist server from the source server, and restrict the user to sshfs commands only.  
 
 * The OSSEC manager and agents use generated server and client SSL certificates, which authenticate and encrypt the traffic.  
 
@@ -128,7 +119,7 @@ The system is provided on an "as is" basis, with no warranties or representation
 
 ##Security Mailing Lists  
 Network Firewall ____________________  
-Deaddrop https://github.com/deaddrop  
+DeadDrop https://github.com/deaddrop  
 Tor https://lists.torproject.org/cgi-bin/mailman/listinfo/tor-announce/  
 Apache2 http://httpd.apache.org/lists.html#http-announce  
 mod_wsgi https://groups.google.com/forum/?fromgroups#!forum/wsgi-security-announce  
@@ -142,3 +133,5 @@ Grsecurity http://grsecurity.net/cgi-bin/mailman/listinfo/grsecurity
 OSSEC http://www.ossec.net/?page_id=21#ossec-list (send email request to join)  
 AppArmor https://lists.ubuntu.com/mailman/listinfo/apparmor  
 Ubuntu 12.04 https://lists.ubuntu.com/mailman/listinfo/ubuntu-security-announce  
+
+
