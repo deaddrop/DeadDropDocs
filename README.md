@@ -131,7 +131,7 @@ it will then show you the key's fingerprint. It should look like the line below.
 	CCCC CCCC CCCC CCCC CCCC  CCCC CCCC CCCC CCCC CCCC  
 
 ##Install and configure puppet
-Puppet is used to install the deaddrop application and configure the environment. Efforts were taken to apply the secrity hardening steps. To keep the attack surface to a minimum uninstall puppet after the environment is configured.
+Puppet is used to install the deaddrop application and configure the environment. Efforts were taken to apply the security hardening steps. To keep the attack surface to a minimum uninstall puppet after the environment is configured.
 https://help.ubuntu.com/12.04/serverguide/puppet.html
 
 ###Monitor Server
@@ -313,7 +313,7 @@ Copy you secret key to the other hosts with a command like this one
 	scp /home/user_name/.google-authenticator user_name@source:.  
 
 ##Create a grsec patched kernel with the ubuntu-precise overlay .deb package  
-The grsecurity wikibook should be read throughly.  
+The grsecurity wikibook should be read thoroughly.
 http://en.wikibooks.org/wiki/Grsecurity  
 The steps for creating a grsec patched kernel with a ubuntu overlay were based from the following link. Please read that blog post for more information.  
 http://compilefailure.blogspot.com/2011/02/grsecurity-patched-ubuntu-server-lts.html  
