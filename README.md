@@ -181,16 +181,17 @@ If you get a **Invalid version format: 0.5.0-rc1** error then download the modul
 
 Clone the deaddrop_puppet repo which contains the rest of the manifests and modules needed. Put them in the correct directories. These modules were not done to puppet style guide. Currently in the process of improving them and making them compliant. At some point we hope to have them hosted on puppet forge but till then use at your own risk and please help out if you are a puppet guru.   
 
-	git clone https://github.com/deaddrop/deaddrop_puppet  
-	cp deaddrop_puppet/manifests/* /etc/puppet/manifests/  
-	cp deaddrop_puppet/modules/* /etc/puppet/modules/
+	cd ~
+	git clone https://github.com/deaddrop/DeadDropDocs  
+	cp DeadDropDocs/deaddrop_puppet/manifests/* /etc/puppet/manifests/  
+	cp DeaddropDocs/deaddrop_puppet/modules/* /etc/puppet/modules/
 
 
 Edit **/etc/puppet/puppet.conf** adding the following lines:  
 
 	nano /etc/puppet/puppet.conf  
 	
->storeconfigs = true  
+ 
 >thin_storeconfigs = true  
 >dbadpter = sqlite3  
 
