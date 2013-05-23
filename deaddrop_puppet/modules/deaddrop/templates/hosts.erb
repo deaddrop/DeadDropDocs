@@ -1,0 +1,20 @@
+<% if puppetmaster_hostname==@hostname %>
+<%= '127.0.0.1    localhost    puppet' %>
+<% else -%>
+<%= '127.0.0.1    localhost' %><% end %>
+127.0.1.1       ubuntu
+
+<%= source_ip -%> <%= source_hostname -%>.<%= domain_name -%> <%= source_hostname %>
+<%= journalist_ip -%> <%= journalist_hostname -%>.<%= domain_name -%> <%= journalist_hostname %>
+<%= monitor_ip -%> <%= monitor_hostname -%>.<%= domain_name -%> <%= monitor_hostname -%> puppet
+<%= intFWlogs_ip -%> <%= intFWlogs_hostname %>
+<%= journalist_intVPN_ip -%> <%= journalist_intVPN_hostname %>
+<%= admin_intVPN_ip -%> <%= admin_intVPN_hostname %>
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+

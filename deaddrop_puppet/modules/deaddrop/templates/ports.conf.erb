@@ -1,0 +1,9 @@
+<% if source_hostname==@hostname %>
+Listen 127.0.0.1:8080
+<% end %>
+<% if journalist_hostname==@hostname %>
+Listen <%= @ipaddress -%>:80
+<IfModule mod_ssl.c>
+    Listen <%= @ipaddress -%>:443
+</IfModule>
+<% end %>

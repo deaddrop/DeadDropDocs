@@ -1,0 +1,65 @@
+# ************************************
+# Default template in module puppetlabs-apache
+# Modified for use by deaddrop application
+# ************************************
+WSGIPythonPath /var/www/deaddrop
+SSLRandomSeed startup builtin
+SSLRandomSeed connect builtin
+SSLSessionCache none
+
+NameVirtualHost <%= vhost_name %>:<%= port %>
+<VirtualHost <%= vhost_name %>:<%= port %>>
+  ServerName <%= srvname %>
+<% if serveraliases.is_a? Array -%>
+<% serveraliases.each do |name| -%><%= "  ServerAlias #{name}\n" %><% end -%>
+<% elsif serveraliases != '' -%>
+<%= "  ServerAlias #{serveraliases}" -%>
+<% end %>
+  DocumentRoot <%= docroot %>
+  Alias /static /var/www/deaddrop/static
+  WSGIScriptAlias / /var/www/deaddrop/<%= my_role -%>.py/
+  AddType text/html .py
+
+  <Directory />
+    AAHatName apachehome
+    Options None
+    AllowOverride None
+    Order deny,allow
+    Deny from all
+  </Directory>
+  <Directory /var/www/deaddrop>
+    AAHatName deaddropHome
+    Order allow,deny
+    allow from all
+  </Directory>
+  <Directory <%= docroot %>>a
+    AAHatName docroot
+    Options <%= options %>
+    AllowOverride None
+    Order allow,deny
+    allow from all
+  </Directory>
+  
+ SSLEngine on
+  SSLProtocol -ALL +TLSv1
+  SSLHonorCipherOrder On
+  SSLCipherSuite ECDHE-RSA-RC4-SHA:RC4-SHA:!ADH:!AES256-SHA:!ECDHE-RSA-AES256-SHA384:!AES128-SHA:!DES-CBC
+  SSLOptions      +StrictRequire
+  SSLVerifyClient require
+  SSLVerifyDepth 2
+  SSLProxyEngine off
+  SSLCertificateFile	/etc/ssl/<%= my_role -%>_certs/<%= my_role -%>.cert.pem
+  SSLCertificateKeyFile	/etc/ssl/<%= my_role -%>_certs/<%= my_role -%>.without.key.pem
+  SSLCACertificateFile  /etc/ssl/<%= my_role -%>_certs/cacert.pem
+  SSLCARevocationFile   /etc/ssl/<%= my_role -%>_certs/cacrl.pem
+<% if my_role =='source' -%>
+<%= "ErrorLog /dev/null" %>
+<%= "LogLevel crit" %>
+<% elsif my_role !='source' -%>
+<%= "ErrorLog /var/log/apache2/#{vhost_name}_error.log" %>
+<%= "CustomLog /var/log/apache2/#{vhost_name}_access.log combined" %>
+<%= "LogLevel info" %>
+<% end %>
+  ServerSignature Off
+</VirtualHost>
+

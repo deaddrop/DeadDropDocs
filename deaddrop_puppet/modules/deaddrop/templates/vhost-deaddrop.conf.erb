@@ -1,0 +1,50 @@
+# ************************************
+# Default template in module puppetlabs-apache
+# Modified for use by deaddrop application
+# ************************************
+WSGIPythonPath /var/www/deaddrop
+
+NameVirtualHost <%= vhost_name %>:<%= port %>
+<VirtualHost <%= vhost_name %>:<%= port %>>
+  ServerName <%= srvname %>
+<% if serveraliases.is_a? Array -%>
+<% serveraliases.each do |name| -%><%= "  ServerAlias #{name}\n" %><% end -%>
+<% elsif serveraliases != '' -%>
+<%= "  ServerAlias #{serveraliases}" -%>
+<% end %>
+  DocumentRoot <%= docroot %>
+  Alias /static /var/www/deaddrop/static
+  WSGIScriptAlias / /var/www/deaddrop/<%= my_role -%>.py/
+  AddType text/html .py
+
+  <Directory />
+    AAHatName apacheHome
+    Options None
+    AllowOverride None
+    Order deny,allow
+    Deny from all
+  </Directory>
+  <Directory /var/www/deaddrop>
+    AAHatName deaddropHome
+    Order allow,deny
+    allow from all
+  </Directory>
+  <Directory <%= docroot %>>
+    AAHatName docroot
+    Options <%= options %>
+    AllowOverride None
+    Order allow,deny
+    allow from all
+  </Directory>
+  
+<% if my_role =='source' -%>
+  <%= "ErrorLog /dev/null" %>
+  <%= "LogLevel crit" %>
+<% elsif my_role !='source' -%>
+  <%= "ErrorLog /var/log/apache2/error.log" %>
+  <%= "CustomLog /var/log/apache2/access.log combined" %>
+  <%= "LogLevel info" %>
+<% end %>
+  ServerSignature Off
+</VirtualHost>
+

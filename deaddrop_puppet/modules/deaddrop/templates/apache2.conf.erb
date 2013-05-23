@@ -1,0 +1,41 @@
+LockFile ${APACHE_LOCK_DIR}/accept.lock
+PidFile ${APACHE_PID_FILE}
+Timeout 300
+KeepAlive On
+MaxKeepAliveRequests 100
+KeepAliveTimeout 5
+<IfModule mpm_worker_module>
+    StartServers          2
+    MinSpareThreads      25
+    MaxSpareThreads      75
+    ThreadLimit          64
+    ThreadsPerChild      25
+    MaxClients          150
+    MaxRequestsPerChild   0
+</IfModule>
+User ${APACHE_RUN_USER}
+Group ${APACHE_RUN_GROUP}
+AccessFileName .htaccess
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+    Satisfy all
+</Files>
+DefaultType None
+HostnameLookups Off
+<% if my_role =='source' -%>
+<%= "ErrorLog /dev/null" %>
+<%= "LogLevel crit" %>
+<% elsif my_role !='source' -%>
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" combined
+ErrorLog /var/log/apache2/error.log
+CustomLog /var/log/apache2/access.log combined
+LogLevel info
+<% end %>
+Include mods-enabled/*.load
+Include mods-enabled/*.conf
+Include httpd.conf
+Include ports.conf
+Include conf.d/
+Include sites-enabled/
+
