@@ -18,40 +18,79 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+##Hardware Requirements
+The following equipment will be required:  
+1. You will need 3 computers with the hard drives still installed  
+2. You will need 1 computer shell (a computer with the hard drive removed)  
+3. You will need 3 USB sticks with Tails the Amesic Incognito Live System installed  
+4. You will need 2 USB sticks for transfering files  
+5. You will need 1 USB stick for storing the applications gpg private key  
+6. A USB stick will be needed for each journalist for storing their personnel gpg private keys  
+
 ##Local Certificate Authority Install  
-The Local CA should not be a host connected to a network. Before removing the hard drive from the SVS configure it as the Local CA.  
-1. Configure the SVS hard drive as the Local CA  
-2. The Ubuntu 12.04 install should be configured to use the LUKS full disk encryption by using the alternate install cd  
-3. Generate the needed certificates and revocation file using the steps below  
-4. Distribute the certificates as needed  
-5. Remove the hard drive configured as the Local CA from the SVS shell  
-6. Store the hard drive configured as the Local CA in a secure safe only accessible by the approved journalists  
-7. Only when needed to create or revoke certificates for the journalist's interface does the hard drive need to be placed back in the SVS laptop shell  
- 
+The journalist's interface uses ssl certificates for transport encryption and authentication that will be generated on the Local CA USB stick.  
+
+1. Steps to download, verify and install Tails to a usb stick can be found here https://tails.boum.org/download/index.en.html  
+2. Step to configure the Personal Data persistant storage feature to store the config file and root CA certs can be found here https://tails.boum.org/doc/first_steps/persistence/index.en.html   
+3. Ensure that Persistent Volume Feature 'Personal Data' is activated  
+3. The Local CA never needs to be connected to a network to generate the needed certificates and revocation lists    
+4. The USB stick that the Local CA is installed on should be stored securely when not in use  
+5. The USB stick that the Local CA is installed on should be clearly labeled to avoid confusion with other USB sticks  
+6. User certificates should only be generated for approved journalists that require access to the journalist interface  
+7. Unique user certificates should be generated for each approved journalist  
+8. User certificates should be securely transported to the approved journalist  
+9. Server and user certificates should be set to expire to your organization's policy  
+10. A User certificate should be revoked if the journalist no longer requires access  
+
 ###Setup openssl
-You can use different directory structure and filenames, just ensure that they are changed throughout the installation and puppet manifests where needed.  
+The configuration files, certificates, and revocation lists are saved in the Persistant folder activated with the Personal Data feature of the Tails Persistent Volume Feature.
 
-	sudo apt-get update  
-	sudo apt-get upgrade -y  
-	mkdir -p /opt/tipsCA/{private,newcerts,certs,usercerts,crl}  
-	touch /opt/tipsCA/index.txt  
-	echo '01' > /opt/tipsCA/serial  
-	echo '01' > /opt/tipsCA/crlnumber  
-	cd /opt/tipsCA    
+	mkdir -p /home/amnesia/Persistent/deaddropCA/{private,newcerts,certs,usercerts,crl}  
+	touch /home/amnesia/Persistent/deaddropCA/index.txt  
+	echo '01' > /home/amnesia/Persistent/deaddropCA/serial  
+	echo '01' > /home/amnesia/Persistent/deaddropCA/crlnumber  
+	cp /etc/ssl/openssl.cnf /home/amnesia/Persistent/deaddropCA/  
+	cd /home/amnesia/Persistent/deaddropCA  
 
-Edit **/usr/lib/ssl/openssl.cnf**  
+Edit **/home/amnesia/Persistent/deaddropCA/openssl.cnf**  adjusting the default values
 
-	nano /usr/lib/ssl/openssl.cnf  
+	nano /home/amnesia/Persistent/deaddropCA/openssl.cnf  
+
 
 >[CA_default]  
->dir             = /opt/tipsCA               # Where everything is kept  
+>dir             = /home/amnesia/Persistent/deaddropCA               # Where everything is kept  
 
+
+...
+
+
+>countryName_default           = US        # Replace US with your default value  
+
+
+...  
+
+
+>stateOrProvinceName_default   = NY        # Replace NY with your default value  
+
+
+...  
+
+
+>0.organizationName_default    = Deaddrop  # Replace Deaddrop with your default value  
+
+Update the OpenSSL environment variable to use the new config file  
+
+        export OPENSSL_CONF=/home/amnesia/Persistent/deaddropCA/openssl.cnf  
+        
 ####Generate the needed certificates
-Generate the CA cert and revocation list:  
+Generate the CA cert and revocation list. Adjust the expirations to meet your organization's policy:  
 
-	openssl ecparam -name secp256r1 -genkey -out private/cakey.pem  
-	openssl req -x509 -extensions v3_ca -sha256 -new -key private/cakey.pem -out certs/cacert.pem -days 3650  
-	openssl ca -gencrl -keyfile private/cakey.pem -cert certs/cacert.pem -out crl/cacrl.pem -crldays 90  
+	openssl ecparam -name prime256v1 -genkey -out private/cakey.pem  
+	openssl req -x509 -extensions v3_ca -sha256 -new -key private/cakey.pem -out certs/cacert.pem -days 365  
+	
+When prompted for "YOUR name" enter a Distinguished Name for your Local CA.  
+
+	openssl ca -gencrl -keyfile private/cakey.pem -cert certs/cacert.pem -out crl/cacrl.pem -crldays 365  
 
 Generate the Journalist's Interface certs:  
 
@@ -59,7 +98,7 @@ Generate the Journalist's Interface certs:
 	openssl req -sha256 -new -nodes -key private/journalist.key.pem -out newcerts/journalist.req.pem -days 365  
 	openssl ca -keyfile private/cakey.pem -cert certs/cacert.pem -in newcerts/journalist.req.pem -out certs/journalist.cert.pem  
 	openssl x509 -in certs/journalist.cert.pem -text -noout  
-	openssl rsa -in private/journalist.key.pem -out private/journalist.without.key  
+	openssl rsa -in private/journalist.key.pem -out private/journalist.with.out.key  
 
 Generate the user certificates for admins and journalists that will require access to the journalist interface. Convert the certs to pkcs12 format to import into browsers.  
 
