@@ -1,3 +1,5 @@
+The documentation has been merged into the main repository at [freedomofpress/securedrop](https://github.com/freedomofpress/securedrop).
+
 Deaddrop Environment Install Guide
 ===========
 
