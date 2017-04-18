@@ -1,11 +1,11 @@
-#DeadDrop Threat Model  
+# DeadDrop Threat Model  
 ---------------------  
 
-##Application Name and Description  
+## Application Name and Description  
 DeadDrop is meant to let sources communicate with journalists with greater anonymity and security than afforded by conventional e-mail.
 
 
-##Business Objectives  
+## Business Objectives  
 * Design an application that provides a source a way to securely upload documents and messages to a journalist that protects the source's anonymity.  
 * Design an environment to host the application that protects the source's anonymity.  
 * The application should allow for the source to return to the site and check for replies from the journalist.  
@@ -17,7 +17,7 @@ DeadDrop is meant to let sources communicate with journalists with greater anony
 * The application and environment should be designed to protect the encrypted files even in the event of a full system compromise or seizure.  
 
 
-##Anonymity Provided
+## Anonymity Provided
 * A Tor hidden service is configured for the application. It is highly recommended for the source to use Tor to submit messages, documents and check for replies. Please consult this link for more information on Tor and Tor hidden services https://www.torproject.org/docs/hidden-services.html.en  
 * Only the two selected journalists have physical access to the application's GPG private key and know the key's passphrase used to decrypt source files. These steps were taken to provide reasonable assurance that only the two selected journalists could decrypt the files after they were encrypted in the application.   
 * The network firewall only detects the tor traffic not information about the source.  
@@ -30,8 +30,8 @@ DeadDrop is meant to let sources communicate with journalists with greater anony
 * The source is urged to delete replies after reading them. The application uses secure-remove to delete the file and it is not reasonably forensically recoverable.
 * To ensure that the physical devices are not tampered with the network firewalls, source interface, journalist interface and monitors servers are located in a corporate owned facility (not a co-location hosting provider or cloud provider).   *The environment is physically monitored 24/7 with strict access policies.  
 
-##Application Usage  
-###Source's Role  
+## Application Usage  
+### Source's Role  
 (S1) The organization's Tor hidden service URL, directions, and links to the Tor single-purpose browser are displayed organization's website. The source downloads and installs the Tor single-purpose browser from https://torproject.org. The source uses the site's hidden service URL (.onion) to use the application with a higher level of anonymity than a HTTPS url can provide.  
 
 (S2) A link to the privacy statement is provided.  
@@ -52,7 +52,7 @@ DeadDrop is meant to let sources communicate with journalists with greater anony
 
 (S10) Once the message is displayed, the source is provided the option to delete it per the previous warning. The secure-delete package's srm command is used to securely wipe the journalist's encrypted message from the source's encrypted file store.  
 
-###Journalist's Role  
+### Journalist's Role  
 (J1) From the journalist's workstation, the journalist VPNs into the tips environment through a VPN tunnel that does not allow split-tunneling and has been configured for 2-factor authentication. The journalist interface requires SSL client certificates for access. The journalist will need to have their user certificate installed into their browser to access the journalist interface.  
 
 (J2) Once the journalist's SSL user certificate is validated, the journalist is presented a list of source code IDs that have submitted documents. The source code IDs that are presented to the journalist is a different 3-word code IDs from the source’s clear text codename. The application generates the separate code IDs using the hashes of the sources’ codenames. This is done so that the source's clear text codename is not known to the journalist. A journalist will not request the source’s clear text codename and the source should not include it in any uploaded files or messages. 
@@ -69,7 +69,7 @@ DeadDrop is meant to let sources communicate with journalists with greater anony
 
 (J8) The journalist's interface also has a reply function. The journalist can enter their message for a specific source into a text box and click 'Submit.' The application retrieves the source's GPG public key based off of the source's hashed codename. If the journalist cannot access the source's GPG public key, the reply function is not rendered. The application encrypts the journalist reply with a unique source's GPG public key, which is stored in the source's hashed codename-encrypted file store.  
 
-##Authentication    
+## Authentication    
 * VPN authentication requires 1) username, 2) follows the organization's password complexity policy, and 3) requires 2-factor authentication such as the one from DUO Security.  
 
 * Admin SSH access should require 1) 2-factor authentication, such as Google 2-factor pam module, 2) following the organization's policy for password complexity, and 3) access restricted to the admin's internal vpn address.  
@@ -96,7 +96,7 @@ DeadDrop is meant to let sources communicate with journalists with greater anony
 
 * Admin access to the network firewall should be restricted to the admin's internal VPN IP address.  
 
-##Security Monitoring  
+## Security Monitoring  
 * Security email alerts are sent to the configured admin distribution email address in the puppet config.  
 * VPN User access  
 * Network firewall configuration changes  
@@ -117,7 +117,7 @@ DeadDrop is meant to let sources communicate with journalists with greater anony
 * “Is it up” site monitoring should be performed with a tool that does not require an agent to be installed in the environment to limit the attack surface.  
 
 
-##Security Mailing Lists  
+## Security Mailing Lists  
 Network Firewall ____________________  
 DeadDrop https://github.com/deaddrop  
 Tor https://lists.torproject.org/cgi-bin/mailman/listinfo/tor-announce/  
