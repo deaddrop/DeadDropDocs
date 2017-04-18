@@ -20,7 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##Hardware Requirements
+## Hardware Requirements
 The following equipment will be required:  
 1. You will need 3 computers with the hard drives still installed  
 2. You will need 1 computer shell (a computer with the hard drive removed)  
@@ -29,7 +29,7 @@ The following equipment will be required:
 5. You will need 1 USB stick for storing the applications gpg private key  
 6. A USB stick will be needed for each journalist for storing their personnel gpg private keys  
 
-##Local Certificate Authority Install  
+## Local Certificate Authority Install  
 The journalist's interface uses ssl certificates for transport encryption and authentication that will be generated on the Local CA USB stick.  
 
 1. Steps to download, verify and install Tails to a usb stick can be found here https://tails.boum.org/download/index.en.html  
@@ -44,7 +44,7 @@ The journalist's interface uses ssl certificates for transport encryption and au
 9. Server and user certificates should be set to expire to your organization's policy  
 10. A User certificate should be revoked if the journalist no longer requires access  
 
-###Setup openssl
+### Setup openssl
 The configuration files, certificates, and revocation lists are saved in the Persistant folder activated with the Personal Data feature of the Tails Persistent Volume Feature.
 
 	mkdir -p /home/amnesia/Persistent/deaddropCA/{private,newcerts,certs,usercerts,crl}  
@@ -84,7 +84,7 @@ Update the OpenSSL environment variable to use the new config file
 
         export OPENSSL_CONF=/home/amnesia/Persistent/deaddropCA/openssl.cnf  
         
-####Generate the needed certificates
+#### Generate the needed certificates
 Generate the CA cert and revocation list. Adjust the expirations to meet your organization's policy:  
 
 	openssl ecparam -name prime256v1 -genkey -out private/cakey.pem  
@@ -117,18 +117,18 @@ Copy the needed certs to the app's external harddrive
 	cp crl/cacrl.pem ~/journalist_certs/  
 	cp certs/{cacert.pem,journalist.cert.pem} ~/journalist_certs/  
 
-##Configure Secure-Viewing-Station and Application's GPG keypair
+## Configure Secure-Viewing-Station and Application's GPG keypair
 
-###Create Ubuntu LiveCD and prepare the SVS  
+### Create Ubuntu LiveCD and prepare the SVS  
 https://help.ubuntu.com/community/LiveCD  
 Remove the hard drive containing the Local CA (after copying the generated certificates to the monitor server)  
 Boot from the SVS from the LiveCD   
 
-###Create the Application's GPG keypair  
+### Create the Application's GPG keypair  
 Insert the app's secure keydrive into the SVS  
 Use an external hard drives rather than a external flash drives. A GPG v1 key will not work with the DeadDrop application. gnupg2 is not required to decrypt messages and files, only to create keys. Use an external entropy device when possible, if one is not available use /dev/random  
 
-####Install required dependencies and create the gpg v2 keys
+#### Install required dependencies and create the gpg v2 keys
 
 	apt-get install gnupg2 secure-delete rng-tools -y  
 	
@@ -161,7 +161,7 @@ Export the Journalist's gpg public key
 
 	gpg2 --export --output journalist.acs --armor Journalist  
 
-####Determine and record the application's gpg key's fingerprint  
+#### Determine and record the application's gpg key's fingerprint  
 
 	gpg --homedir /var/www/deaddrop/keys --list-keys --with-fingerprint  
  
@@ -171,13 +171,13 @@ it will then show you the key's fingerprint. It should look like the line below.
 
 	CCCC CCCC CCCC CCCC CCCC  CCCC CCCC CCCC CCCC CCCC  
 
-##Install and configure puppet
+## Install and configure puppet
 Puppet is used to install the deaddrop application and configure the environment. Efforts were taken to apply the security hardening steps. To keep the attack surface to a minimum uninstall puppet after the environment is configured.
 https://help.ubuntu.com/12.04/serverguide/puppet.html
 
-###Monitor Server
+### Monitor Server
 -----------  
-####Set the hostname if not already done  
+#### Set the hostname if not already done  
 
 	nano /etc/hostname  
 	
@@ -185,7 +185,7 @@ https://help.ubuntu.com/12.04/serverguide/puppet.html
 
 	hostname -F /etc/hostname  
 
-####Edit the /etc/hosts file  
+#### Edit the /etc/hosts file  
 It should look something like below  
 
 	nano /etc/hosts  
@@ -199,7 +199,7 @@ It should look something like below
 >xxx.xxx.xxx.xxx intvpn.domain_name    intvpn  
 >xxx.xxx.xxx.xxx intfw.domain_name    intfw  
 
-####Install the puppetmaster and dependencies  
+#### Install the puppetmaster and dependencies  
 When promted during iptables-persistent install hit *yes* for the IP address version you are using. This guide uses IPv4 enter **yes** when prompted.  
 
 	sudo apt-get install puppetmaster iptables-persistent rubygems sqlite3 libsqlite3-ruby git -y  
@@ -236,7 +236,7 @@ Edit **/etc/puppet/puppet.conf** adding the following lines:
 >thin_storeconfigs = true  
 >dbadpter = sqlite3  
 
-####Gather the required files from the external harddrives  
+#### Gather the required files from the external harddrives  
 From the Secure Viewing Station's:  
 App's pub gpg key `/etc/puppet/modules/deaddrop/files`  
 
@@ -246,7 +246,7 @@ Journalist Interface's SSL private key `/etc/puppet/modules/deaddrop/files/journ
 Local CA's root CA cert `/etc/puppet/modules/deaddrop/files/journalist_certs/`  
 Local CA's CRL list `/etc/puppet/modules/deaddrop/files/journalist_certs/`
 
-#####Modify the default parameters  
+##### Modify the default parameters  
 Modify parameters and hostnames the first section of nodes.pp manifest  
 
 	nano /etc/puppet/manifests/nodes.pp  
@@ -273,12 +273,12 @@ Modify parameters and hostnames the first section of nodes.pp manifest
 >    $mailserver_ip               = 'gmail-smtp-in.l.google.com'  
 >    $ossec_emailto               = 'user_name@gmail.com'  
 
-####Restart the puppetmaster
+#### Restart the puppetmaster
 
 	/etc/init.d/puppetmaster restart
 
 ------------------------
-###Install Puppet on the Source and Journalist servers  
+### Install Puppet on the Source and Journalist servers  
 ------------------------
 
 	apt-get install puppet iptables-persistent  
@@ -303,20 +303,20 @@ Start the puppet agent on the source and journalist server
 
 	/etc/init.d/puppet restart  
 
-###Sign the puppet agent certs on the Monitor server  
+### Sign the puppet agent certs on the Monitor server  
 
 	puppetca --list --all   
 	puppetca --sign --all
 
-###Run the puppet manifest to configure the environment  
+### Run the puppet manifest to configure the environment  
 Run puppet on the 1) monitor server, 2) journalist interface server, 3) source interface server  
 
 	puppet agent --server monitor.domain_name -t  
 	
-##Steps for the system admins to create keys for Google's 2 Step Authenticator PAM module  
+## Steps for the system admins to create keys for Google's 2 Step Authenticator PAM module  
 Ensure that you are not root. Each user that needs SSH access will need to perform these steps. The same key can be used for all devices in the same environment. If the ios/android device and the servers are more than 30 seconds off the codes will not work. Currently the puppet manifest only downloads and partially install google-authenticator it does not enable it. Was worried that people may lock themselves out. You can read more about it at https://code.google.com/p/google-authenticator/    
 
-###Each admin should create their own code  
+### Each admin should create their own code  
 Create the code  
 
 	cd ~  
@@ -354,13 +354,13 @@ Copy you secret key to the other hosts with a command like this one
 
 	scp /home/user_name/.google-authenticator user_name@source:.  
 
-##Create a grsec patched kernel with the ubuntu-precise overlay .deb package  
+## Create a grsec patched kernel with the ubuntu-precise overlay .deb package  
 The grsecurity wikibook should be read thoroughly.
 http://en.wikibooks.org/wiki/Grsecurity  
 The steps for creating a grsec patched kernel with a ubuntu overlay were based from the following link. Please read that blog post for more information.  
 http://compilefailure.blogspot.com/2011/02/grsecurity-patched-ubuntu-server-lts.html  
 
-###Gather files and packages needed for the ubuntu overlay  
+### Gather files and packages needed for the ubuntu overlay  
 
 	cd ~  
 	mkdir grsec  
@@ -397,7 +397,7 @@ Verify the packages
 	bunzip2 linux-3.2.36.tar.bz2  
 	gpg --verify linux-3.2.36.tar.sign  
 
-###Apply the patch to the kernel and make the grsec kernel
+### Apply the patch to the kernel and make the grsec kernel
 
 	tar -xf linux-3.2.36.tar  
 	cd linux-3.2.36  
@@ -425,7 +425,7 @@ In the gui:
 	make-kpkg --initrd --overlay-dir=../ubuntu-package kernel_image kernel_headers  
 
 Grab a cup of coffee. When the package is complete scp the .deb files to all the servers.  
-###Resolve PAX grub issues    
+### Resolve PAX grub issues    
 
 	apt-get install paxctl -y  
 	paxctl -Cpm /usr/sbin/grub-probe  
@@ -435,7 +435,7 @@ Grab a cup of coffee. When the package is complete scp the .deb files to all the
 	paxctl -Cpm /usr/bin/grub-mount  
 	update-grub  
 
-###Install the grsec patched kernel  
+### Install the grsec patched kernel  
 
 	cd ..  
 	dpkg -i *.deb  
@@ -458,7 +458,7 @@ After finishing installing the ensure the grsec sysctl configs are applied and l
     sysctl -w kernel.grsecurity.grsec_lock = 1  
 
 
-##Clean up the system and puppet firewall rules  
+## Clean up the system and puppet firewall rules  
 Once the environment is verified, uninstall puppet on the puppetmaster and puppet agents to decrease the attack surface  
 
 	apt-get purge rubygems puppetmaster puppet gcc make libncurses5-dev build-essential  kernel-package git-core g++ python-setuptools sqlite3 libsqlite3-ruby  
