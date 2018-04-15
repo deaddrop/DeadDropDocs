@@ -1,11 +1,9 @@
-The documentation has been merged into the main repository at [freedomofpress/securedrop](https://github.com/freedomofpress/securedrop).
-
 Deaddrop Environment Install Guide
 ===========
 
 Deaddrop is a tool for communicating securely with journalists. Please also view the Threat_Model.doc, diagram.jpg, and design.jpg in docs/ for more information. The environment install guide is below the license. 
 
-Copyright (C) 2011-2013 James Dolan
+Copyright (C) 2011-2013 Aaron Swartz, James Dolan, Kevin Poulsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
